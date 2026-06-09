@@ -23,7 +23,7 @@ class SemanticController extends Controller
             'x-api-key' => $apiSemantic
         ])->get("https://api.semanticscholar.org/graph/v1/paper/search", [
             'query' => $query,
-            'limit' => 10,
+            'limit' => 20,
             'fields' => 'title,url,abstract,authors',
 
             'openAccessPdf' => true,
