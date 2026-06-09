@@ -1,10 +1,32 @@
+* {
+    margin: 0;
+    padding: 0;
+        box-sizing: border-box;
+}
+
 body {
     font-family: inter;
 }
 
 .formulir {
     display: flex;
-    justify-content: space-between;
-    width: 20px;
-    height: 10px;
+    height: 80vh;
+}
+
+.flex-1 {
+    flex: 1;
+        display: flex;
+    flex-direction: column;
+    justify-content: center; /* Teks berada di tengah secara vertikal */
+    background-color: aqua;
+    padding: 60px;
+}
+
+.flex-2 {
+    flex: 1;
+        display: flex;
+    justify-content: center; /* Membuat form berada di tengah horizontal */
+    align-items: center;
+    background-color: white;
+    padding: 60px;
 }

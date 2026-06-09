@@ -13,21 +13,25 @@
 
 <body>
     <div class="formulir">
-        <div>
-            <h1>Halo Jurnalers!</h1>
+        <div class="flex-1">
+            <h1>Halo Jurnalers! 👋</h1>
             <p>Solusi untukmu Meringkas Jurnal!</p>
         </div>
-
-        <p>Welcome Back!</p>
-        <p>Belum Punya Akun? Register Dulu</p>
-
-        <form>
+        <div class="flex-2">
             <div>
-                <p><input type="email" placeholder="Jurnal@gmail.com"></p>
-                <p><input type="password" placeholder="Jurnal"></p>
-                <button type="submit">Login Now</button>
+                <div>
+                    <p>Welcome Back!</p>
+                    <p>Belum Punya Akun? Register Dulu</p>
+                </div>
+                <div>
+                    <form>
+                        <p><input type="email" placeholder="Jurnal@gmail.com"></p>
+                        <p><input type="password" placeholder="Jurnal"></p>
+                        <button type="submit">Login Now</button>
+                    </form>
+                </div>
             </div>
-        </form>
+        </div>
     </div>
 </body>
 
