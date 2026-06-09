@@ -25,17 +25,28 @@
 
         <div class="right-panel">
             <div class="form-container">
-                <div class="logo-text">SalesSkip</div>
+                <div class="logo-text">JournaLens</div>
 
                 <h2>Welcome Back!</h2>
-                <p class="subtitle">Don't have an account? <a href="#">Create a new account now</a>, it's FREE! Takes less than a minute.</p>
+                <p class="subtitle">Don't have an account? <a href="{{ route('register') }}">Create a new account now</a>, it's FREE! Takes less than a minute.</p>
 
-                <form id="loginForm">
+                @if (session('success'))
+                    <p class="subtitle" style="color: #16a34a;">{{ session('success') }}</p>
+                @endif
+
+                @if ($errors->any())
+                    <div class="subtitle" style="color: #dc2626;">
+                        {{ $errors->first() }}
+                    </div>
+                @endif
+
+                <form id="loginForm" method="POST" action="{{ route('login.process') }}">
+                    @csrf
                     <div class="input-group">
-                        <input type="email" id="email" value="hisalim.ux@gmail.com" placeholder="Email Address" required>
+                        <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="Email Address" required>
                     </div>
                     <div class="input-group">
-                        <input type="password" id="password" placeholder="Password" required>
+                        <input type="password" id="password" name="password" placeholder="Password" required>
                     </div>
 
                     <button type="submit" class="btn-primary">Login Now</button>
@@ -46,25 +57,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
-            // Mencegah halaman reload saat form di-submit
-            event.preventDefault();
-
-            // Mengambil nilai input
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            // Validasi sederhana & Feedback
-            if (email && password) {
-                alert(`Login berhasil dicoba dengan email: ${email}`);
-                // Di sini Anda bisa menambahkan logika fetch/AJAX ke server
-            } else {
-                alert('Silakan masukkan email dan password.');
-            }
-        });
-    </script>
 </body>
 
 </html>

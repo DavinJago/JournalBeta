@@ -33,11 +33,13 @@
 
         <div class="nav-right">
             <i class="fa-regular fa-bell"></i>
-
-            <button class="logout-btn">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                Logout
-            </button>
+            <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                @csrf
+                <button class="logout-btn" type="submit">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    Logout
+                </button>
+            </form>
         </div>
 
     </nav>

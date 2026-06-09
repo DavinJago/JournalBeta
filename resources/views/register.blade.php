@@ -27,23 +27,30 @@
             <div class="form-container">
 
                 <h2>Create Account</h2>
-                <p class="subtitle">Already have an account? <a href="/login">Login here</a></p>
+                <p class="subtitle">Already have an account? <a href="{{ route('login') }}">Login here</a></p>
 
-                <form id="registerForm">
+                @if ($errors->any())
+                    <div class="subtitle" style="color: #dc2626;">
+                        {{ $errors->first() }}
+                    </div>
+                @endif
+
+                <form id="registerForm" method="POST" action="{{ route('register.process') }}">
+                    @csrf
                     <div class="input-group">
-                        <input type="text" id="name" placeholder="Full Name" required>
+                        <input type="text" id="name" name="name" value="{{ old('name') }}" placeholder="Full Name" required>
                     </div>
 
                     <div class="input-group">
-                        <input type="email" id="email" placeholder="Email Address" required>
+                        <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="Email Address" required>
                     </div>
 
                     <div class="input-group">
-                        <input type="password" id="password" placeholder="Create Password" required>
+                        <input type="password" id="password" name="password" placeholder="Create Password" required>
                     </div>
 
                     <div class="input-group">
-                        <input type="password" id="confirm_password" placeholder="Confirm Password" required>
+                        <input type="password" id="confirm_password" name="password_confirmation" placeholder="Confirm Password" required>
                     </div>
 
                     <button type="submit" class="btn-primary">Register Now</button>
@@ -52,29 +59,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.getElementById('registerForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm_password').value;
-
-            // Validasi tambahan: ngecek password cocok atau tidak
-            if (password !== confirmPassword) {
-                alert('Waduh! Password dan Konfirmasi Password tidak cocok.');
-                return;
-            }
-
-            if (name && email && password) {
-                alert(`Register berhasil dicoba untuk: ${name} (${email})`);
-            } else {
-                alert('Silakan lengkapi semua data.');
-            }
-        });
-    </script>
 </body>
 
 </html>
