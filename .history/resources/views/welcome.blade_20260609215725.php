@@ -62,52 +62,25 @@
             Dapatkan ringkasan, analisis, dan rekomendasi relevan dari AI.
         </p>
 
+        <!-- Search -->
         <div class="search-box">
-    <input type="text" id="inputKeyword" placeholder="Ketik topik jurnal di sini...">
-    <button onclick="prosesCariJurnal()">Cari Jurnal</button>
-</div>
 
-<div id="workspace-jurnal" style="margin-top: 20px; padding: 15px; border: 1px dashed #ccc;">
-    <p style="color: gray;">Workspace kosong. Silakan cari jurnal terlebih dahulu.</p>
-</div>
+            <div class="search-input">
 
-<script>
-async function prosesCariJurnal() {
-    const keyword = document.getElementById('inputKeyword').value;
-    const workspace = document.getElementById('workspace-jurnal');
-    
-    // Beri efek loading di workspace
-    workspace.innerHTML = "<p>Sedang mencari jurnal ilmiah...</p>";
+                <a href="/tambah-jurnal" class="add-journal-btn">
+                <i class="fa-solid fa-plus"></i>
+                </a>
 
-    try {
-        // Ambil data dari rute Laravel yang sudah kamu buat
-        const response = await fetch(`/api/cari-jurnal?keyword=${encodeURIComponent(keyword)}`);
-        const hasil = await response.json();
+                <input
+                     type="text"
+                    placeholder="Cari jurnal berdasarkan judul, penulis, atau kata kunci..."
+                    >
 
-        if (hasil.status === 'Sukses' && hasil.data.length > 0) {
-            // Kosongkan workspace dulu
-            workspace.innerHTML = "<h3>📄 Hasil Rekomendasi Jurnal:</h3>";
-            
-            // Looping data jurnal dan cetak linknya satu per satu
-            hasil.data.forEach(jurnal => {
-                workspace.innerHTML += `
-                    <div style="margin-bottom: 15px; padding: 10px; background: #f9f9f9; border-radius: 5px;">
-                        <strong style="display:block; color:#2c3e50;">${jurnal.title}</strong>
-                        <p style="font-size: 13px; color: #7f8c8d; margin: 5px 0;">${jurnal.abstract ? jurnal.abstract.substring(0, 100) + '...' : 'Tidak ada abstrak.'}</p>
-                        <a href="${jurnal.url}" target="_blank" style="color: #3498db; text-decoration: none; font-weight: bold;">
-                            🔗 Buka Sumber Jurnal asli
-                        </a>
-                    </div>
-                `;
-            });
-        } else {
-            workspace.innerHTML = "<p style='color:red;'>Jurnal tidak ditemukan. Coba kata kunci lain.</p>";
-        }
-    } catch (error) {
-        workspace.innerHTML = "<p style='color:red;'>Terjadi kesalahan jaringan.</p>";
-    }
-}
-    </script>
+                </div>
+
+            <button class="search-btn">
+                Cari
+            </button>
 
         </div>
 
@@ -174,8 +147,6 @@ async function prosesCariJurnal() {
         </div>
 
     </section>
-
-    
 
 </body>
 </html>

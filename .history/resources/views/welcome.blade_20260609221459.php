@@ -107,7 +107,7 @@ async function prosesCariJurnal() {
         workspace.innerHTML = "<p style='color:red;'>Terjadi kesalahan jaringan.</p>";
     }
 }
-    </script>
+</script>
 
         </div>
 

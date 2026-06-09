@@ -216,22 +216,27 @@ body::after{
     align-items:center;
     justify-content:center;
 
-    border-radius:12px;
+    text-decoration:none;
+
+    border-radius:14px;
 
     background:linear-gradient(
         135deg,
-        white 
-        white
+        #2ea4ff,
+        #5f52ff
     );
 
     color:white;
-    text-decoration:none;
+    font-size:22px;
 
-    font-size:24px;
-    font-weight:bold;
-
-    flex-shrink:0;
+    transition:.3s;
 }
+
+.add-journal-btn:hover{
+    transform:scale(1.05);
+    box-shadow:0 8px 20px rgba(95,82,255,.3);
+}
+
 /* FEATURES */
 
 .features{
