@@ -233,7 +233,23 @@ body::after{
     flex-shrink:0;
 }
 
+body.panel-open .navbar {
+    padding-right: calc(50vw + 24px);
+    transition: padding-right 0.35s cubic-bezier(.4,0,.2,1);
+}
+
+
+
 /* FEATURES */
+
+body.panel-open .features {
+    padding-right: 0;
+}
+
+.features {
+    transition: all 0.35s cubic-bezier(.4,0,.2,1);
+    overflow: visible;
+}
 
 .features{
     max-width:1400px;
