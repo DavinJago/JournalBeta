@@ -8,3 +8,6 @@ Route::get('/', function () {
 });
 
 Route::get('/tes-ai', [GeminiController::class, 'testKoneksi']);
+Route::get('/login', function () {
+    return view('login');
+});
