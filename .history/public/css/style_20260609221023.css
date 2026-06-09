@@ -232,6 +232,12 @@ body::after{
 
     flex-shrink:0;
 }
+
+.add-journal-btn i{
+    position:relative;
+    top:-1px;
+}
+
 /* FEATURES */
 
 .features{

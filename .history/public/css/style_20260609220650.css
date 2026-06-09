@@ -220,8 +220,8 @@ body::after{
 
     background:linear-gradient(
         135deg,
-        white 
-        white
+        #white  ,
+        #white
     );
 
     color:white;
@@ -232,6 +232,7 @@ body::after{
 
     flex-shrink:0;
 }
+
 /* FEATURES */
 
 .features{
