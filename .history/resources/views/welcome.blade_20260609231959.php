@@ -64,13 +64,12 @@
             Dapatkan ringkasan, analisis, dan rekomendasi relevan dari AI.
         </p>
 
-        <div class="search-box">
-    <div class="search-input">
-        <i class="fa-solid fa-plus"></i>
-        <input type="text" id="inputKeyword" placeholder="Masukkan topik penelitian, kata kunci, atau judul jurnal..."
-            onkeydown="if(event.key==='Enter') prosesCariJurnal()">
-    </div>
-    <button class="search-btn" onclick="prosesCariJurnal()">Cari</button>
+        <div class="search-input-wrapper">
+    <span class="search-icon">
+        <i class="fa-solid fa-magnifying-glass-plus"></i>
+    </span>
+    <input type="text" id="inputKeyword" placeholder="Masukkan topik penelitian, kata kunci, atau judul jurnal..."
+        onkeydown="if(event.key==='Enter') prosesCariJurnal()">
 </div>
 
 <style>
@@ -257,6 +256,26 @@
             padding-right: 0;
         }
     }
+
+    .search-input-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    color: #7c3aed;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.search-input-wrapper input {
+    padding-left: 40px;
+    width: 100%;
+}
 </style>
 
 <!-- Side Panel -->

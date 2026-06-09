@@ -66,7 +66,7 @@
 
         <div class="search-box">
     <div class="search-input">
-        <i class="fa-solid fa-plus"></i>
+        <i class="fa-solid fa-magnifying-glass-plus"></i>
         <input type="text" id="inputKeyword" placeholder="Masukkan topik penelitian, kata kunci, atau judul jurnal..."
             onkeydown="if(event.key==='Enter') prosesCariJurnal()">
     </div>

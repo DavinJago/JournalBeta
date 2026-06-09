@@ -64,14 +64,7 @@
             Dapatkan ringkasan, analisis, dan rekomendasi relevan dari AI.
         </p>
 
-        <div class="search-box">
-    <div class="search-input">
-        <i class="fa-solid fa-plus"></i>
-        <input type="text" id="inputKeyword" placeholder="Masukkan topik penelitian, kata kunci, atau judul jurnal..."
-            onkeydown="if(event.key==='Enter') prosesCariJurnal()">
-    </div>
-    <button class="search-btn" onclick="prosesCariJurnal()">Cari</button>
-</div>
+        
 
 <style>
     /* Layout split */

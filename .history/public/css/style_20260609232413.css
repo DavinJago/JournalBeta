@@ -171,6 +171,8 @@ body::after{
     gap:20px;
 }
 
+
+
 .search-input{
     flex:1;
     display:flex;
@@ -232,7 +234,6 @@ body::after{
 
     flex-shrink:0;
 }
-
 
 /* FEATURES */
 

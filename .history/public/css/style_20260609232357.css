@@ -171,6 +171,21 @@ body::after{
     gap:20px;
 }
 
+.search-box button {
+    background: #3b82f6;      /* biru */
+    color: #fff;
+    border: none;
+    border-radius: 99px;
+    padding: 12px 28px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.search-box button:hover {
+    background: #2563eb;
+}
+
 .search-input{
     flex:1;
     display:flex;
@@ -232,7 +247,6 @@ body::after{
 
     flex-shrink:0;
 }
-
 
 /* FEATURES */
 
