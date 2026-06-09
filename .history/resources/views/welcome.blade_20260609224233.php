@@ -109,7 +109,7 @@
 
     /* Geser body saat panel terbuka */
     body.panel-open {
-        padding-right: 50vw;
+        padding-right: 420px;
         transition: padding-right 0.35s cubic-bezier(.4,0,.2,1);
     }
 

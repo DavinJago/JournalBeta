@@ -101,7 +101,7 @@
     }
 
     .hasil-panel.open {
-        width: 50vw;
+        width: 420px;
         min-width: 320px;
         border-left: 1px solid #ede9fe;
         box-shadow: -4px 0 24px rgba(124,58,237,0.08);
@@ -109,7 +109,7 @@
 
     /* Geser body saat panel terbuka */
     body.panel-open {
-        padding-right: 50vw;
+        padding-right: 420px;
         transition: padding-right 0.35s cubic-bezier(.4,0,.2,1);
     }
 
