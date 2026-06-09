@@ -1,0 +1,10 @@
+body {
+    font-family: inter;
+}
+
+.formulir {
+    display: flex;
+    justify-content: space-between;
+    width: 20px;
+    height: 10px;
+}
