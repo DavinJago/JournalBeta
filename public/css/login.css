@@ -1,32 +1,243 @@
+/* CSS Reset & Base Styles */
 * {
     margin: 0;
     padding: 0;
-        box-sizing: border-box;
-}
-
-body {
+    box-sizing: border-box;
     font-family: inter;
 }
 
-.formulir {
+body {
+    min-height: 100vh;
     display: flex;
-    height: 80vh;
+    background-color: #f8f9fa;
 }
 
-.flex-1 {
+/* Layout Container */
+.container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* Left Panel (Blue Side) */
+.left-panel {
     flex: 1;
-        display: flex;
+    background: linear-gradient(135deg, #3746d0, #1e2690);
+    color: white;
+    padding: 4rem;
+    display: flex;
     flex-direction: column;
-    justify-content: center; /* Teks berada di tengah secara vertikal */
-    background-color: aqua;
-    padding: 60px;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
 }
 
-.flex-2 {
+/* Dekorasi garis tipis pada background biru */
+.left-panel::before {
+    content: "";
+    position: absolute;
+    top: -20%;
+    left: -10%;
+    width: 150%;
+    height: 150%;
+    background-image:
+        radial-gradient(
+            circle at 10% 20%,
+            transparent 60%,
+            rgba(255, 255, 255, 0.05) 61%,
+            transparent 62%
+        ),
+        radial-gradient(
+            circle at 10% 20%,
+            transparent 70%,
+            rgba(255, 255, 255, 0.05) 71%,
+            transparent 72%
+        ),
+        radial-gradient(
+            circle at 10% 20%,
+            transparent 80%,
+            rgba(255, 255, 255, 0.05) 81%,
+            transparent 82%
+        );
+    pointer-events: none;
+}
+
+.left-content {
+    margin-top: 4rem;
+    max-width: 400px;
+    position: relative;
+    z-index: 1;
+}
+
+.logo-icon {
+    font-size: 4rem;
+    line-height: 1;
+    margin-bottom: 2rem;
+}
+
+.left-panel h1 {
+    font-size: 3.5rem;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.left-panel p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.copyright {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    position: relative;
+    z-index: 1;
+}
+
+/* Right Panel (White Side) */
+.right-panel {
     flex: 1;
-        display: flex;
-    justify-content: center; /* Membuat form berada di tengah horizontal */
+    background: white;
+    display: flex;
     align-items: center;
-    background-color: white;
-    padding: 60px;
+    justify-content: center;
+    padding: 2rem;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.02);
+    z-index: 2;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 420px;
+}
+
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 4rem;
+}
+
+.form-container h2 {
+    font-size: 2rem;
+    color: #111;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 2.5rem;
+    line-height: 1.5;
+}
+
+.subtitle a {
+    color: #3746d0;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* Form Controls */
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 0;
+    border: none;
+    border-bottom: 1px solid #ddd;
+    font-size: 1rem;
+    color: #333;
+    outline: none;
+    transition: border-color 0.3s;
+    background: transparent;
+}
+
+.input-group input:focus {
+    border-bottom-color: #3746d0;
+}
+
+.input-group input::placeholder {
+    color: #aaa;
+}
+
+/* Buttons */
+.btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: #1a1a1a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    transition: background 0.3s;
+}
+
+.btn-primary:hover {
+    background: #333;
+}
+
+.btn-google {
+    width: 100%;
+    padding: 14px;
+    background: white;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.3s;
+}
+
+.btn-google:hover {
+    background: #f8f9fa;
+}
+
+.btn-google svg {
+    width: 20px;
+    height: 20px;
+}
+
+.forgot-password {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.forgot-password a {
+    color: #111;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .left-panel {
+        padding: 3rem 2rem;
+        min-height: 400px;
+    }
+
+    .right-panel {
+        padding: 3rem 2rem;
+    }
+
+    .logo-text {
+        display: none;
+    }
 }
