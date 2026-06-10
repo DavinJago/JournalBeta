@@ -9,7 +9,6 @@ class SemanticController extends Controller
 {
     public function cariJurnal(Request $request)
     {
-    // 1. Ambil kata kunci yang diketik user dari frontend
         $query = $request->input('keyword');
 
         if (!$query) {
@@ -18,7 +17,6 @@ class SemanticController extends Controller
 
         $apiSemantic = env('SEMANTIC_SCHOLAR_API_KEY');
 
-    // 2. Tembak API Semantic Scholar (Mencari Jurnal)
         $response = Http::withHeaders([
             'x-api-key' => $apiSemantic
         ])->get("https://api.semanticscholar.org/graph/v1/paper/search", [
@@ -34,7 +32,6 @@ class SemanticController extends Controller
             return response()->json(['error' => 'Gagal mengambil data dari Semantic Scholar'], 500);
         }
 
-    // 3. Kirim hasilnya yang rapi ke Frontend
         return response()->json([
             'status' => 'Sukses',
             'data' => $response->json()['data'] ?? []

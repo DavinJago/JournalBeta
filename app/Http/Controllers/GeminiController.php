@@ -41,11 +41,9 @@ class GeminiController extends Controller
         if ($request->hasFile('file_jurnal')) {
             $file = $request->file('file_jurnal');
             
-            // 2. Simpan file fisik ke folder 'storage/app/public/jurnals'
             $namaFile = time() . '_' . $file->getClientOriginalName();
             $pathFile = $file->storeAs('public/jurnals', $namaFile);
 
-            // 3. Ekstraksi Teks (Mendukung TXT dan PDF maksimal 5 halaman)
             if ($file->getClientOriginalExtension() == 'txt') {
                 $teksJurnalMentah = file_get_contents($file->getRealPath());
             } else {
@@ -62,7 +60,6 @@ class GeminiController extends Controller
                 }
             }
 
-            // 4. Catat riwayat upload ke Database MySQL via XAMPP
             $idJurnalBaru = DB::table('jurnals')->insertGetId([
                 'judul_file' => $namaFile,
                 'path_file' => $pathFile,
@@ -71,7 +68,6 @@ class GeminiController extends Controller
                 'updated_at' => now(),
             ]);
 
-            // 5. Prosedur Menembak API Gemini (Kunci yang Sempat Hilang)
             $apiKey = env('GEMINI_API_KEY');
             
             $promptSakti = "Kamu adalah pakar reviewer jurnal ilmiah internasional. "
@@ -84,7 +80,6 @@ class GeminiController extends Controller
                         . "}. "
                         . "Pastikan kamu HANYA mengembalikan data JSON saja, tanpa tanda petik backtick dan tanpa basa-basi teks lain.";
 
-            // PROSES KIRIM DATA KE GOOGLE GEMINI
             $responseGemini = Http::withHeaders([
                 'Content-Type' => 'application/json'
             ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $apiKey, [
@@ -96,11 +91,9 @@ class GeminiController extends Controller
                 ]
             ]);
 
-            // 6. Bersih-bersih data hasil kiriman AI
             $kontenMentahAI = $responseGemini->json()['candidates'][0]['content']['parts'][0]['text'] ?? '{}';
             $dataJsonAI = json_decode($kontenMentahAI, true);
 
-            // Sekoci penyelamat jika struktur JSON rusak
             if (json_last_error() !== JSON_ERROR_NONE || empty($dataJsonAI)) {
                 $dataJsonAI = [
                     'judul_dan_penulis' => $namaFile,
@@ -112,7 +105,6 @@ class GeminiController extends Controller
                 ];
             }
 
-            // 7. Kembalikan paket data super bersih ke Frontend
             return response()->json([
                 'status' => 'Sukses Simpan dan Analisis',
                 'id_database' => $idJurnalBaru,
