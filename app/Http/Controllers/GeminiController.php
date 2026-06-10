@@ -33,9 +33,8 @@ class GeminiController extends Controller
 
     public function uploadDanAnalisa(Request $request)
     {
-        // 1. Validasi apakah file benar-benar di-upload oleh user
         $request->validate([
-            'file_jurnal' => 'required|file|mimes:pdf,txt|max:10000', // maksimal 10MB
+            'file_jurnal' => 'required|file|mimes:pdf,txt|max:10000', 
         ]);
 
         if ($request->hasFile('file_jurnal')) {
