@@ -170,7 +170,6 @@ async function prosesUploadKeBackend() {
         `;
     }
 
-    // Reset isi input file agar user bisa upload file yang sama lagi nantinya
     fileInput.value = '';
 }
 </script>
