@@ -11,7 +11,7 @@ Route::get('/', function () {
 
 Route::get('/tes-ai', [GeminiController::class, 'testKoneksi']);
 Route::get('/api/cari-jurnal', [SemanticController::class, 'cariJurnal']);
-Route::post('/api/upload-jurnal', [GeminiController::class, 'uploadDanAnalisa']);
+Route::get('/api/upload-jurnal', [GeminiController::class], 'uploadDanAnalisa');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.process');
