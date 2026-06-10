@@ -6,10 +6,12 @@
     <title>JurnaLens</title>
 
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
 </head>
 <body>
 
@@ -77,44 +79,99 @@
 async function prosesUploadKeBackend() {
     const fileInput = document.getElementById('fileJurnalInput');
     const file = fileInput.files[0];
+    
+    // Jika user membatalkan pilihan file, stop proses
+    if (!file) return;
 
-    if (!file) {
-        alert("Pilih file jurnalnya dulu, Bro!");
-        return;
-    }
+    // 1. Siapkan UI Panel untuk Mode Loading Rangkuman AI
+    document.getElementById('panel-keyword-label').textContent = file.name;
+    document.getElementById('panel-jumlah').textContent = 'Sedang Memproses AI...';
+    document.getElementById('panel-list').innerHTML = `
+        <div class="panel-empty">
+            <div class="icon">🤖</div>
+            <p style="margin:0 0 4px; font-weight:600;">Gemini sedang membaca jurnal...</p>
+            <p style="margin:0; font-size:12px; color:#777;">Proses ini memakan waktu beberapa detik karena AI sedang membedah Bab 1 sampai Kesimpulan.</p>
+        </div>
+    `;
+    // Langsung buka panel biar user tahu proses sedang berjalan
+    bukaPanel();
 
+    // 2. Bungkus file fisik ke FormData
     const dataForm = new FormData();
     dataForm.append('file_jurnal', file);
 
     try {
+        // 3. Tembak rute POST Laravel-mu
         const response = await fetch('/api/upload-jurnal', {
             method: 'POST',
             body: dataForm,
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                // Jangan lupa sertakan CSRF Token bawaan Laravel agar tidak eror 419
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
             }
         });
 
         const hasil = await response.json();
-        console.log("Hasil dari AI:", hasil);
 
-        // Tampilkan hasil ke panel jika ada
-        if (hasil && hasil.hasil_rangkuman_gemini) {
-            document.getElementById('panel-keyword-label').textContent = file.name;
-            document.getElementById('panel-jumlah').textContent = 'Hasil Analisis Jurnal';
+        if (hasil.status === 'Sukses Simpan dan Analisis') {
+            document.getElementById('panel-jumlah').textContent = 'Analisis Berhasil!';
+            
+            // Ambil objek hasil rangkuman JSON dari Gemini
+            const ai = hasil.hasil_rangkuman_gemini;
+
+            // 4. Cetak hasil bedah bab Gemini ke dalam panel Workspace
             document.getElementById('panel-list').innerHTML = `
+                <div class="jurnal-card" style="border-left: 4px solid #4a5568;">
+                    <div class="jurnal-card-label" style="background:#4a5568;">📄 Identitas</div>
+                    <p class="jurnal-card-title">${ai.judul_dan_penulis || file.name}</p>
+                </div>
+
                 <div class="jurnal-card">
-                    <p class="jurnal-card-title">📄 ${file.name}</p>
-                    <p class="jurnal-card-abstract">${JSON.stringify(hasil.hasil_rangkuman_gemini)}</p>
+                    <div class="jurnal-card-label">📍 Bab 1: Latar Belakang</div>
+                    <p class="jurnal-card-abstract" style="-webkit-line-clamp: unset;">${ai.latar_belakang_bab1}</p>
+                </div>
+
+                <div class="jurnal-card">
+                    <div class="jurnal-card-label">📚 Landasan Teori</div>
+                    <p class="jurnal-card-abstract" style="-webkit-line-clamp: unset;">${ai.landasan_teori}</p>
+                </div>
+
+                <div class="jurnal-card">
+                    <div class="jurnal-card-label">⚙️ Metodologi Penelitian</div>
+                    <p class="jurnal-card-abstract" style="-webkit-line-clamp: unset;">${ai.metodologi_penelitian}</p>
+                </div>
+
+                <div class="jurnal-card">
+                    <div class="jurnal-card-label">📊 Hasil dan Pembahasan</div>
+                    <p class="jurnal-card-abstract" style="-webkit-line-clamp: unset;">${ai.hasil_dan_pembahasan}</p>
+                </div>
+
+                <div class="jurnal-card">
+                    <div class="jurnal-card-label">🏁 Kesimpulan dan Saran</div>
+                    <p class="jurnal-card-abstract" style="-webkit-line-clamp: unset;">${ai.kesimpulan_dan_saran}</p>
                 </div>
             `;
-            bukaPanel();
+        } else {
+            document.getElementById('panel-jumlah').textContent = 'Gagal Analisis';
+            document.getElementById('panel-list').innerHTML = `
+                <div class="panel-empty" style="color:#e53e3e;">
+                    <div class="icon">❌</div>
+                    <p style="margin:0; font-size:13px;">AI gagal membedah file. Pastikan format benar.</p>
+                </div>
+            `;
         }
-
     } catch (error) {
-        console.error("Eror saat upload:", error);
-        alert("Gagal upload file. Coba lagi.");
+        document.getElementById('panel-jumlah').textContent = 'Terjadi kesalahan';
+        document.getElementById('panel-list').innerHTML = `
+            <div class="panel-empty" style="color:#e53e3e;">
+                <div class="icon">⚠️</div>
+                <p style="margin:0; font-size:13px;">Gagal mengunggah file ke backend.</p>
+            </div>
+        `;
     }
+
+    // Reset isi input file agar user bisa upload file yang sama lagi nantinya
+    fileInput.value = '';
 }
 </script>
         <input type="text" id="inputKeyword" placeholder="Masukkan topik penelitian, kata kunci, atau judul jurnal..."

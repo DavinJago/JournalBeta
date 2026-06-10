@@ -9,7 +9,7 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-Route::get('/tes-ai', [GeminiController::class, 'testKoneksi']);
+Route::get('/api/tes-ai', [GeminiController::class, 'testKoneksi']);
 Route::get('/api/cari-jurnal', [SemanticController::class, 'cariJurnal']);
 Route::post('/api/upload-jurnal', [GeminiController::class, 'uploadDanAnalisa']);
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Smalot\PdfParser\Parser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -33,9 +34,8 @@ class GeminiController extends Controller
 
     public function uploadDanAnalisa(Request $request)
     {
-        // 1. Validasi apakah file benar-benar di-upload oleh user
         $request->validate([
-            'file_jurnal' => 'required|file|mimes:pdf,txt|max:10000', // maksimal 10MB
+            'file_jurnal' => 'required|file|mimes:pdf,txt|max:10000', 
         ]);
 
         if ($request->hasFile('file_jurnal')) {
@@ -45,29 +45,38 @@ class GeminiController extends Controller
             $namaFile = time() . '_' . $file->getClientOriginalName();
             $pathFile = $file->storeAs('public/jurnals', $namaFile);
 
-            // 3. Ekstraksi Teks (Contoh simulasi pembacaan file txt/pdf sederhana)
-            // Jika file berupa txt, kita bisa langsung baca isinya dengan file_get_contents
+            // 3. Ekstraksi Teks (Mendukung TXT dan PDF maksimal 5 halaman)
             if ($file->getClientOriginalExtension() == 'txt') {
                 $teksJurnalMentah = file_get_contents($file->getRealPath());
             } else {
-                // Untuk demo awal PDF, kita simulasikan mengambil potongan teks teks besar,
-                // atau minta teman frontend mengirimkan teksnya langsung via request jika mereka pakai pdf-reader di browser.
-                $teksJurnalMentah = "Ini adalah simulasi teks panjang dari Bab 1 sampai Kesimpulan file PDF: " . $namaFile;
+                $pdfParser = new Parser();
+                $pdf = $pdfParser->parseFile($file->getRealPath());
+                
+                // Taktik pembatasan halaman agar tidak overload token Gemini
+                $pages = $pdf->getPages();
+                $teksJurnalMentah = "";
+                $maxHalaman = min(count($pages), 5); 
+
+                for ($i = 0; $i < $maxHalaman; $i++) {
+                    $teksJurnalMentah .= $pages[$i]->getText() . "\n";
+                }
             }
 
             // 4. Catat riwayat upload ke Database MySQL via XAMPP
             $idJurnalBaru = DB::table('jurnals')->insertGetId([
                 'judul_file' => $namaFile,
                 'path_file' => $pathFile,
-                'ekstraksi_teks' => $teksJurnalMentah,
+                'ekstensi_teks' => $teksJurnalMentah,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
-            // 5. OPER TEKS JURNAL KE OTAK AI GEMINI (Prompt Full-Text kita kemarin)
+            // 5. Prosedur Menembak API Gemini (Kunci yang Sempat Hilang)
             $apiKey = env('GEMINI_API_KEY');
             
-            $promptSakti = "Kamu adalah pakar reviewer jurnal ilmiah internasional. ". "Tugasmu adalah merangkum seluruh isi jurnal berikut: '" . $teksJurnalMentah . "'. ". "Catatan: Jika jurnal asli berbahasa Inggris, kamu harus menerjemahkan dan merangkumnya ke dalam Bahasa Indonesia yang akademis. "
+            $promptSakti = "Kamu adalah pakar reviewer jurnal ilmiah internasional. "
+                        . "Tugasmu adalah merangkum seluruh isi jurnal berikut: '" . $teksJurnalMentah . "'. "
+                        . "Catatan: Jika jurnal asli berbahasa Inggris, kamu harus menerjemahkan dan merangkumnya ke dalam Bahasa Indonesia yang akademis. "
                         . "Berikan hasil analisis dalam struktur JSON kaku dengan key wajib berikut: "
                         . "{ "
                         . "'judul_dan_penulis': '...', 'latar_belakang_bab1': '...', 'landasan_teori': '...', "
@@ -75,6 +84,7 @@ class GeminiController extends Controller
                         . "}. "
                         . "Pastikan kamu HANYA mengembalikan data JSON saja, tanpa tanda petik backtick dan tanpa basa-basi teks lain.";
 
+            // PROSES KIRIM DATA KE GOOGLE GEMINI
             $responseGemini = Http::withHeaders([
                 'Content-Type' => 'application/json'
             ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $apiKey, [
@@ -86,12 +96,28 @@ class GeminiController extends Controller
                 ]
             ]);
 
-            // 6. Kembalikan respons sukses ke Frontend
+            // 6. Bersih-bersih data hasil kiriman AI
+            $kontenMentahAI = $responseGemini->json()['candidates'][0]['content']['parts'][0]['text'] ?? '{}';
+            $dataJsonAI = json_decode($kontenMentahAI, true);
+
+            // Sekoci penyelamat jika struktur JSON rusak
+            if (json_last_error() !== JSON_ERROR_NONE || empty($dataJsonAI)) {
+                $dataJsonAI = [
+                    'judul_dan_penulis' => $namaFile,
+                    'latar_belakang_bab1' => 'Gagal membedah otomatis. Struktur teks PDF terlalu kompleks atau mengandung banyak simbol.',
+                    'landasan_teori' => 'Tidak dapat diekstrak.',
+                    'metodologi_penelitian' => 'Tidak dapat diekstrak.',
+                    'hasil_dan_pembahasan' => 'Tidak dapat diekstrak.',
+                    'kesimpulan_dan_saran' => 'Tidak dapat diekstrak.'
+                ];
+            }
+
+            // 7. Kembalikan paket data super bersih ke Frontend
             return response()->json([
                 'status' => 'Sukses Simpan dan Analisis',
                 'id_database' => $idJurnalBaru,
                 'nama_file_tersimpan' => $namaFile,
-                'hasil_rangkuman_gemini' => $responseGemini->json()
+                'hasil_rangkuman_gemini' => $dataJsonAI 
             ]);
         }
 
