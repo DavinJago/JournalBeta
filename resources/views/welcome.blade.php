@@ -11,13 +11,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
 </head>
 <body>
 
     <!-- Navbar -->
     <nav class="navbar">
-
         <div class="logo">
             <div class="logo-icon">
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -43,7 +41,6 @@
                 </button>
             </form>
         </div>
-
     </nav>
 
     <!-- Hero -->
@@ -67,133 +64,73 @@
         </p>
 
         <div class="search-box">
-    <div class="search-input">
-        <i class="fa-regular fa-folder-open" onclick="document.getElementById('fileJurnalInput').click()" style="cursor:pointer;"></i>
+            <div class="search-input">
+                <i class="fa-regular fa-folder-open"
+                   onclick="document.getElementById('fileJurnalInput').click()"
+                   style="cursor:pointer;"
+                   title="Upload jurnal (PDF/TXT)"></i>
 
-<form id="formUploadJurnal">
-    <input type="file" id="fileJurnalInput" name="file_jurnal" accept=".pdf,.txt" style="display:none;"
-        onchange="prosesUploadKeBackend()">
-</form>
+                <form id="formUploadJurnal">
+                    <input type="file" id="fileJurnalInput" name="file_jurnal" accept=".pdf,.txt"
+                        style="display:none;"
+                        onchange="prosesUploadKeBackend()">
+                </form>
 
-<script>
-async function prosesUploadKeBackend() {
-    const fileInput = document.getElementById('fileJurnalInput');
-    const file = fileInput.files[0];
-    
-    // Jika user membatalkan pilihan file, stop proses
-    if (!file) return;
-
-    // 1. Siapkan UI Panel untuk Mode Loading Rangkuman AI
-    document.getElementById('panel-keyword-label').textContent = file.name;
-    document.getElementById('panel-jumlah').textContent = 'Sedang Memproses AI...';
-    document.getElementById('panel-list').innerHTML = `
-        <div class="panel-empty">
-            <div class="icon">🤖</div>
-            <p style="margin:0 0 4px; font-weight:600;">Gemini sedang membaca jurnal...</p>
-            <p style="margin:0; font-size:12px; color:#777;">Proses ini memakan waktu beberapa detik karena AI sedang membedah Bab 1 sampai Kesimpulan.</p>
-        </div>
-    `;
-    // Langsung buka panel biar user tahu proses sedang berjalan
-    bukaPanel();
-
-    // 2. Bungkus file fisik ke FormData
-    const dataForm = new FormData();
-    dataForm.append('file_jurnal', file);
-
-    try {
-        // 3. Tembak rute POST Laravel-mu
-        const response = await fetch('/api/upload-jurnal', {
-            method: 'POST',
-            body: dataForm,
-            headers: {
-                // Jangan lupa sertakan CSRF Token bawaan Laravel agar tidak eror 419
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-            }
-        });
-
-        const hasil = await response.json();
-
-        if (hasil.status === 'Sukses Simpan dan Analisis') {
-            document.getElementById('panel-jumlah').textContent = 'Analisis Berhasil!';
-            
-            // Ambil objek hasil rangkuman JSON dari Gemini
-            const ai = hasil.hasil_rangkuman_gemini;
-
-            // 4. Cetak hasil bedah bab Gemini ke dalam panel Workspace
-            document.getElementById('panel-list').innerHTML = `
-                <div class="jurnal-card" style="border-left: 4px solid #4a5568;">
-                    <div class="jurnal-card-label" style="background:#4a5568;">📄 Identitas</div>
-                    <p class="jurnal-card-title">${ai.judul_dan_penulis || file.name}</p>
-                </div>
-
-                <div class="jurnal-card">
-                    <div class="jurnal-card-label">📍 Bab 1: Latar Belakang</div>
-                    <p class="jurnal-card-abstract" style="-webkit-line-clamp: unset;">${ai.latar_belakang_bab1}</p>
-                </div>
-
-                <div class="jurnal-card">
-                    <div class="jurnal-card-label">📚 Landasan Teori</div>
-                    <p class="jurnal-card-abstract" style="-webkit-line-clamp: unset;">${ai.landasan_teori}</p>
-                </div>
-
-                <div class="jurnal-card">
-                    <div class="jurnal-card-label">⚙️ Metodologi Penelitian</div>
-                    <p class="jurnal-card-abstract" style="-webkit-line-clamp: unset;">${ai.metodologi_penelitian}</p>
-                </div>
-
-                <div class="jurnal-card">
-                    <div class="jurnal-card-label">📊 Hasil dan Pembahasan</div>
-                    <p class="jurnal-card-abstract" style="-webkit-line-clamp: unset;">${ai.hasil_dan_pembahasan}</p>
-                </div>
-
-                <div class="jurnal-card">
-                    <div class="jurnal-card-label">🏁 Kesimpulan dan Saran</div>
-                    <p class="jurnal-card-abstract" style="-webkit-line-clamp: unset;">${ai.kesimpulan_dan_saran}</p>
-                </div>
-            `;
-        } else {
-            document.getElementById('panel-jumlah').textContent = 'Gagal Analisis';
-            document.getElementById('panel-list').innerHTML = `
-                <div class="panel-empty" style="color:#e53e3e;">
-                    <div class="icon">❌</div>
-                    <p style="margin:0; font-size:13px;">AI gagal membedah file. Pastikan format benar.</p>
-                </div>
-            `;
-        }
-    } catch (error) {
-        document.getElementById('panel-jumlah').textContent = 'Terjadi kesalahan';
-        document.getElementById('panel-list').innerHTML = `
-            <div class="panel-empty" style="color:#e53e3e;">
-                <div class="icon">⚠️</div>
-                <p style="margin:0; font-size:13px;">Gagal mengunggah file ke backend.</p>
+                <input type="text" id="inputKeyword"
+                    placeholder="Masukkan topik penelitian, kata kunci, atau judul jurnal..."
+                    onkeydown="if(event.key==='Enter') prosesCariJurnal()">
             </div>
-        `;
-    }
+            <button class="search-btn" onclick="prosesCariJurnal()">Cari</button>
+        </div>
 
-    fileInput.value = '';
-}
-</script>
-        <input type="text" id="inputKeyword" placeholder="Masukkan topik penelitian, kata kunci, atau judul jurnal..."
-            onkeydown="if(event.key==='Enter') prosesCariJurnal()">
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+
+        <div class="card">
+            <div class="icon blue">
+                <i class="fa-solid fa-book"></i>
+            </div>
+            <h3>Cari Jurnal</h3>
+            <p>Temukan jurnal, skripsi dan paper dari berbagai sumber terpercaya.</p>
+        </div>
+
+        <div class="card">
+            <div class="icon green">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+            <h3>Ringkasan AI</h3>
+            <p>Dapatkan ringkasan otomatis dari jurnal yang relevan.</p>
+        </div>
+
+        <div class="card">
+            <div class="icon orange">
+                <i class="fa-solid fa-bookmark"></i>
+            </div>
+            <h3>Analisis Celah</h3>
+            <p>Analisis celah untuk dijadikan ide penelitian baru</p>
+        </div>
+
+    </section>
+
+    <!-- Side Panel -->
+    <div class="hasil-panel" id="hasil-panel">
+        <div class="panel-header">
+            <div>
+                <div class="panel-keyword-badge">
+                    <span>🔍</span>
+                    <span id="panel-keyword-label"></span>
+                </div>
+                <h3 class="panel-title" id="panel-jumlah"></h3>
+            </div>
+            <button class="panel-close-btn" onclick="tutupPanel()" title="Tutup">✕</button>
+        </div>
+        <div class="panel-body" id="panel-list"></div>
     </div>
-    <button class="search-btn" onclick="prosesCariJurnal()">Cari</button>
-</div>
 
 <style>
-    /* Layout split */
-    .app-layout {
-        display: flex;
-        transition: all 0.35s cubic-bezier(.4,0,.2,1);
-        min-height: 100vh;
-        position: relative;
-    }
-
-    .main-content {
-        flex: 1;
-        min-width: 0;
-        transition: all 0.35s cubic-bezier(.4,0,.2,1);
-    }
-
+    /* ── Layout Split ──────────────────────────────── */
     .hasil-panel {
         width: 0;
         min-width: 0;
@@ -218,19 +155,17 @@ async function prosesUploadKeBackend() {
         box-shadow: -4px 0 24px rgba(124,58,237,0.08);
     }
 
-    /* Geser body saat panel terbuka */
     body.panel-open {
         padding-right: 50vw;
         transition: padding-right 0.35s cubic-bezier(.4,0,.2,1);
     }
 
-    /* Panel inner content */
+    /* ── Panel Header ──────────────────────────────── */
     .panel-header {
         padding: 18px 20px 14px;
         border-bottom: 1px solid #f0f0f0;
         background: #fafafa;
         display: flex;
-        align-items: flex-start;
         justify-content: space-between;
         flex-shrink: 0;
     }
@@ -256,42 +191,41 @@ async function prosesUploadKeBackend() {
     }
 
     .panel-close-btn {
-        background: #f3f0ff;
+        background: none;
         border: none;
-        font-size: 16px;
         cursor: pointer;
-        color: #7c3aed;
-        padding: 5px 9px;
-        border-radius: 8px;
+        font-size: 16px;
+        color: #888;
+        padding: 4px 8px;
+        border-radius: 6px;
         line-height: 1;
         flex-shrink: 0;
         margin-left: 8px;
         transition: background .2s;
     }
 
-    .panel-close-btn:hover {
-        background: #ede9fe;
-    }
+    .panel-close-btn:hover { background: #ede9fe; }
 
+    /* ── Panel Body ────────────────────────────────── */
     .panel-body {
         flex: 1;
         overflow-y: auto;
         padding: 16px;
     }
 
+    /* ── Jurnal Cards ──────────────────────────────── */
     .jurnal-card {
         margin-bottom: 12px;
         padding: 14px;
         background: #f8f7ff;
         border: 1px solid #ede9fe;
+        border-left: 4px solid #7c3aed;
         border-radius: 10px;
         transition: box-shadow .2s;
     }
 
-    .jurnal-card:hover {
-        box-shadow: 0 2px 12px rgba(124,58,237,0.12);
-    }
-
+    .jurnal-card:hover { box-shadow: 0 2px 12px rgba(124,58,237,0.12); }
+    
     .jurnal-num {
         background: #7c3aed;
         color: #fff;
@@ -320,7 +254,7 @@ async function prosesUploadKeBackend() {
     }
 
     .jurnal-card-abstract {
-        font-size: 12px;
+        font-size: 18px;
         color: #6b7280;
         margin: 0 0 10px;
         line-height: 1.5;
@@ -340,185 +274,291 @@ async function prosesUploadKeBackend() {
         transition: background .2s;
     }
 
-    .jurnal-card-btn:hover {
-        background: #6d28d9;
-    }
+    .jurnal-card-btn:hover { background: #6d28d9; }
 
+    /* ── Empty / Loading States ────────────────────── */
     .panel-empty {
         text-align: center;
         padding: 50px 20px;
         color: #999;
     }
 
-    .panel-empty .icon {
-        font-size: 40px;
-        margin-bottom: 12px;
+    .panel-empty .icon { font-size: 40px; margin-bottom: 12px; }
+
+    /* Spinner animasi */
+    .spinner {
+        display: inline-block;
+        width: 36px;
+        height: 36px;
+        border: 4px solid #ede9fe;
+        border-top-color: #7c3aed;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-bottom: 14px;
     }
 
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Loading steps */
+    .loading-steps {
+        list-style: none;
+        padding: 0;
+        margin: 16px 0 0;
+        text-align: left;
+        display: inline-block;
+    }
+
+    .loading-steps li {
+        font-size: 12px;
+        color: #9ca3af;
+        padding: 3px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .loading-steps li.active {
+        color: #7c3aed;
+        font-weight: 600;
+    }
+
+    .loading-steps li.done { color: #10b981; }
+
+    /* ── Responsive ────────────────────────────────── */
     @media (max-width: 768px) {
-        .hasil-panel.open {
-            width: 100vw;
-        }
-        body.panel-open {
-            padding-right: 0;
-        }
+        .hasil-panel.open { width: 100vw; }
+        body.panel-open { padding-right: 0; }
     }
 </style>
 
-<!-- Side Panel -->
-<div class="hasil-panel" id="hasil-panel">
-    <div class="panel-header">
-        <div>
-            <div class="panel-keyword-badge">
-                <span>🔍</span>
-                <span id="panel-keyword-label"></span>
-            </div>
-            <h3 class="panel-title" id="panel-jumlah"></h3>
-        </div>
-        <button class="panel-close-btn" onclick="tutupPanel()" title="Tutup">✕</button>
-    </div>
-    <div class="panel-body" id="panel-list"></div>
-</div>
-
 <script>
-function bukaPanel() {
-    document.getElementById('hasil-panel').classList.add('open');
-    document.body.classList.add('panel-open');
-}
+    // ── Panel helpers ───────────────────────────────────────────────────────
+    function bukaPanel() {
+        document.getElementById('hasil-panel').classList.add('open');
+        document.body.classList.add('panel-open');
+    }
 
-function tutupPanel() {
-    document.getElementById('hasil-panel').classList.remove('open');
-    document.body.classList.remove('panel-open');
-}
+    function tutupPanel() {
+        document.getElementById('hasil-panel').classList.remove('open');
+        document.body.classList.remove('panel-open');
+    }
 
-async function prosesCariJurnal() {
-    const keyword = document.getElementById('inputKeyword').value.trim();
-    if (!keyword) return;
+    // ── Render loading dengan step indicator ───────────────────────────────
+    function renderLoading(namaFile, stepAktif = 0) {
+        const steps = [
+            'Mengunggah file ke server...',
+            'Gemini memproses dokumen...',
+            'AI membedah isi jurnal...',
+        ];
 
-    document.getElementById('panel-keyword-label').textContent = keyword;
-    document.getElementById('panel-jumlah').textContent = 'Sedang mencari...';
-    document.getElementById('panel-list').innerHTML = `
-        <div class="panel-empty">
-            <div class="icon">⏳</div>
-            <p style="margin:0; font-size:13px;">Mengambil rekomendasi jurnal...</p>
-        </div>
-    `;
-    bukaPanel();
+        const stepsHtml = steps.map((s, i) => {
+            let cls = '';
+            if (i < stepAktif) cls = 'done';
+            else if (i === stepAktif) cls = 'active';
+            const icon = i < stepAktif ? '✅' : (i === stepAktif ? '⏳' : '○');
+            return `<li class="${cls}">${icon} ${s}</li>`;
+        }).join('');
 
-    try {
-        const response = await fetch(`/api/cari-jurnal?keyword=${encodeURIComponent(keyword)}`);
-        const hasil = await response.json();
-
-        if (hasil.status === 'Sukses' && hasil.data.length > 0) {
-            document.getElementById('panel-jumlah').textContent = hasil.data.length + ' Jurnal Ditemukan';
-
-            let html = '';
-            hasil.data.forEach((jurnal, i) => {
-                html += `
-                    <div class="jurnal-card">
-                        <div class="jurnal-card-label">
-                            <span class="jurnal-num">${i + 1}</span>
-                            Rekomendasi
-                        </div>
-                        <p class="jurnal-card-title">${jurnal.title}</p>
-                        <p class="jurnal-card-abstract">
-                            ${jurnal.abstract ? jurnal.abstract.substring(0, 120) + '...' : 'Tidak ada abstrak.'}
-                        </p>
-                        <a href="${jurnal.url}" target="_blank" class="jurnal-card-btn">
-                            🔗 Buka Jurnal
-                        </a>
-                    </div>
-                `;
-            });
-
-            document.getElementById('panel-list').innerHTML = html;
-        } else {
-            document.getElementById('panel-jumlah').textContent = 'Jurnal tidak ditemukan';
-            document.getElementById('panel-list').innerHTML = `
-                <div class="panel-empty">
-                    <div class="icon">🔎</div>
-                    <p style="margin:0 0 4px; font-weight:600; color:#555;">Tidak ada hasil</p>
-                    <p style="margin:0; font-size:12px;">Coba kata kunci yang lebih spesifik.</p>
-                </div>
-            `;
-        }
-    } catch (error) {
-        document.getElementById('panel-jumlah').textContent = 'Terjadi kesalahan';
         document.getElementById('panel-list').innerHTML = `
-            <div class="panel-empty" style="color:#e53e3e;">
-                <div class="icon">⚠️</div>
-                <p style="margin:0; font-size:13px;">Gagal terhubung ke server.</p>
+            <div class="panel-empty">
+                <div class="spinner"></div>
+                <p style="margin:0 0 4px; font-weight:600; color:#1e1e2e;">${namaFile}</p>
+                <p style="margin:0; font-size:12px; color:#888;">Proses ini memakan 15–45 detik.</p>
+                <ul class="loading-steps">${stepsHtml}</ul>
             </div>
         `;
     }
-}
+
+    // ── Upload & Analisis ───────────────────────────────────────────────────
+    async function prosesUploadKeBackend() {
+        const fileInput = document.getElementById('fileJurnalInput');
+        const file      = fileInput.files[0];
+        if (!file) return;
+
+        // Cek ukuran file di sisi klien (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            alert('File terlalu besar. Maksimum 10MB.');
+            fileInput.value = '';
+            return;
+        }
+
+        // Tampilkan panel loading — step 0: upload
+        document.getElementById('panel-keyword-label').textContent = file.name;
+        document.getElementById('panel-jumlah').textContent = 'Mengunggah & Menganalisis...';
+        renderLoading(file.name, 0);
+        bukaPanel();
+
+        const dataForm = new FormData();
+        dataForm.append('file_jurnal', file);
+
+        // Simulasi step 1 setelah 2 detik (Gemini memproses)
+        const stepTimer = setTimeout(() => renderLoading(file.name, 1), 2000);
+        // Simulasi step 2 setelah 8 detik (AI membedah)
+        const stepTimer2 = setTimeout(() => renderLoading(file.name, 2), 8000);
+
+        try {
+            const response = await fetch('/api/upload-jurnal', {
+                method: 'POST',
+                body: dataForm,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                }
+            });
+
+            clearTimeout(stepTimer);
+            clearTimeout(stepTimer2);
+
+            const hasil = await response.json();
+
+            // ── Sukses ────────────────────────────────────────────────────
+            if (hasil.status === 'Sukses Simpan dan Analisis') {
+                document.getElementById('panel-jumlah').textContent = 'Analisis Berhasil ✅';
+                const ai = hasil.hasil_rangkuman_gemini;
+
+                document.getElementById('panel-list').innerHTML = `
+                    <div class="jurnal-card" style="border-left-color:#4a5568; background:#f7fafc;">
+                        <div class="jurnal-card-label" style="color:#4a5568;">📄 Identitas Jurnal</div>
+                        <p class="jurnal-card-title">${escapeHtml(ai.judul_dan_penulis || file.name)}</p>
+                    </div>
+
+                    <div class="jurnal-card">
+                        <div class="jurnal-card-label">📍 Bab 1: Latar Belakang</div>
+                        <p class="jurnal-card-abstract" style="-webkit-line-clamp:unset;">${escapeHtml(ai.latar_belakang_bab1)}</p>
+                    </div>
+
+                    <div class="jurnal-card">
+                        <div class="jurnal-card-label">📚 Landasan Teori</div>
+                        <p class="jurnal-card-abstract" style="-webkit-line-clamp:unset;">${escapeHtml(ai.landasan_teori)}</p>
+                    </div>
+
+                    <div class="jurnal-card">
+                        <div class="jurnal-card-label">⚙️ Metodologi Penelitian</div>
+                        <p class="jurnal-card-abstract" style="-webkit-line-clamp:unset;">${escapeHtml(ai.metodologi_penelitian)}</p>
+                    </div>
+
+                    <div class="jurnal-card">
+                        <div class="jurnal-card-label">📊 Hasil dan Pembahasan</div>
+                        <p class="jurnal-card-abstract" style="-webkit-line-clamp:unset;">${escapeHtml(ai.hasil_dan_pembahasan)}</p>
+                    </div>
+
+                    <div class="jurnal-card">
+                        <div class="jurnal-card-label">🏁 Kesimpulan dan Saran</div>
+                        <p class="jurnal-card-abstract" style="-webkit-line-clamp:unset;">${escapeHtml(ai.kesimpulan_dan_saran)}</p>
+                    </div>
+
+                    <div class="jurnal-card" style="border-left-color:#319795; background:#e6fffa;">
+                        <div class="jurnal-card-label" style="color:#319795;">💡 Rekomendasi Ide Penelitian Baru</div>
+                        <p class="jurnal-card-abstract" style="-webkit-line-clamp:unset; font-weight:500; color:#2d3748;">
+                            ${escapeHtml(ai.ide_penelitian_baru || 'Gemini tidak merumuskan ide baru untuk jurnal ini.')}
+                        </p>
+                    </div>
+                `;
+
+            // ── Error dari backend ─────────────────────────────────────────
+            } else {
+                const pesanError = hasil.error || 'AI gagal menganalisis jurnal.';
+                document.getElementById('panel-jumlah').textContent = 'Analisis Gagal';
+                document.getElementById('panel-list').innerHTML = `
+                    <div class="panel-empty" style="color:#e53e3e;">
+                        <div class="icon">❌</div>
+                        <p style="margin:0 0 6px; font-weight:600;">Gagal menganalisis</p>
+                        <p style="margin:0; font-size:12px; color:#718096;">${escapeHtml(pesanError)}</p>
+                        <p style="margin:8px 0 0; font-size:12px;">Pastikan file PDF bisa dibaca teks (bukan hasil scan).</p>
+                    </div>
+                `;
+            }
+
+        } catch (error) {
+            clearTimeout(stepTimer);
+            clearTimeout(stepTimer2);
+            console.error('Upload error:', error);
+            document.getElementById('panel-jumlah').textContent = 'Terjadi Kesalahan';
+            document.getElementById('panel-list').innerHTML = `
+                <div class="panel-empty" style="color:#e53e3e;">
+                    <div class="icon">⚠️</div>
+                    <p style="margin:0 0 6px; font-weight:600;">Koneksi Gagal</p>
+                    <p style="margin:0; font-size:12px; color:#718096;">Gagal menghubungi server. Periksa koneksi internet dan coba lagi.</p>
+                </div>
+            `;
+        }
+
+        fileInput.value = '';
+    }
+
+    // ── Cari Jurnal via Keyword ─────────────────────────────────────────────
+    async function prosesCariJurnal() {
+        const keyword = document.getElementById('inputKeyword').value.trim();
+        if (!keyword) return;
+
+        document.getElementById('panel-keyword-label').textContent = keyword;
+        document.getElementById('panel-jumlah').textContent = 'Mencari jurnal...';
+        document.getElementById('panel-list').innerHTML = `
+            <div class="panel-empty">
+                <div class="spinner"></div>
+                <p style="margin:0; font-size:13px; color:#555;">Mengambil rekomendasi jurnal...</p>
+            </div>
+        `;
+        bukaPanel();
+
+        try {
+            const response = await fetch(`/api/cari-jurnal?keyword=${encodeURIComponent(keyword)}`);
+            const hasil    = await response.json();
+
+            if (hasil.status === 'Sukses' && hasil.data.length > 0) {
+                document.getElementById('panel-jumlah').textContent = hasil.data.length + ' Jurnal Ditemukan';
+
+                let html = '';
+                hasil.data.forEach((jurnal, i) => {
+                    html += `
+                        <div class="jurnal-card">
+                            <div class="jurnal-card-label">
+                                <span class="jurnal-num">${i + 1}</span>
+                                Rekomendasi
+                            </div>
+                            <p class="jurnal-card-title">${escapeHtml(jurnal.title)}</p>
+                            <p class="jurnal-card-abstract">
+                                ${jurnal.abstract ? escapeHtml(jurnal.abstract.substring(0, 120)) + '...' : 'Tidak ada abstrak.'}
+                            </p>
+                            <a href="${escapeHtml(jurnal.url)}" target="_blank" rel="noopener" class="jurnal-card-btn">
+                                🔗 Buka Jurnal
+                            </a>
+                        </div>
+                    `;
+                });
+                document.getElementById('panel-list').innerHTML = html;
+
+            } else {
+                document.getElementById('panel-jumlah').textContent = 'Jurnal tidak ditemukan';
+                document.getElementById('panel-list').innerHTML = `
+                    <div class="panel-empty">
+                        <div class="icon">🔎</div>
+                        <p style="margin:0 0 4px; font-weight:600; color:#555;">Tidak ada hasil</p>
+                        <p style="margin:0; font-size:12px;">Coba kata kunci yang lebih spesifik.</p>
+                    </div>
+                `;
+            }
+
+        } catch (error) {
+            document.getElementById('panel-jumlah').textContent = 'Terjadi Kesalahan';
+            document.getElementById('panel-list').innerHTML = `
+                <div class="panel-empty" style="color:#e53e3e;">
+                    <div class="icon">⚠️</div>
+                    <p style="margin:0; font-size:13px;">Gagal terhubung ke server.</p>
+                </div>
+            `;
+        }
+    }
+
+    // ── Utility: escape HTML untuk cegah XSS ───────────────────────────────
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
 </script>
-
-    </section>
-
-    <!-- Features -->
-
-    <section class="features">
-
-        <div class="card">
-
-            <div class="icon blue">
-                <i class="fa-solid fa-book"></i>
-            </div>
-
-            <h3>Cari Jurnal</h3>
-
-            <p>
-                Temukan jurnal, skripsi dan paper dari berbagai sumber terpercaya.
-            </p>
-
-        </div>
-
-        <div class="card">
-
-            <div class="icon green">
-                <i class="fa-solid fa-robot"></i>
-            </div>
-
-            <h3>Ringkasan AI</h3>
-
-            <p>
-                Dapatkan ringkasan otomatis dari jurnal yang relevan.
-            </p>
-
-        </div>
-
-        <div class="card">
-
-            <div class="icon purple">
-                <i class="fa-solid fa-chart-column"></i>
-            </div>
-
-            <h3>Analisis Sitasi</h3>
-
-            <p>
-                Lihat tren sitasi dan dampak penelitian secara visual.
-            </p>
-
-        </div>
-
-        <div class="card">
-
-            <div class="icon orange">
-                <i class="fa-solid fa-bookmark"></i>
-            </div>
-
-            <h3>Kelola Referensi</h3>
-
-            <p>
-                Simpan dan atur referensi favorit Anda dengan mudah.
-            </p>
-
-        </div>
-
-    </section>
-
-    
 
 </body>
 </html>
