@@ -5,7 +5,12 @@
 *.html diff=html
 *.md diff=markdown
 *.php diff=php
+*.php linguist-language=PHP
+*.blade.php linguist-language=Blade
 
+/public/build/** linguist-generated=true
+/vendor/** linguist-vendored
+/node_modules/** linguist-vendored
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
